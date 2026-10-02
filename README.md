@@ -1,9 +1,25 @@
 # dsh-tool-gzh-publisher
 
+[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/yuehancn/dsh-tool-gzh-publisher)
+
+> **在 dsh 里把关并推送公众号草稿** —— 装完这个插件，你的 Agent 就能先过质量门、
+> 再把稿件推进公众号草稿箱，全程不用离开对话。
+
 公众号（WeChat Official Account）管线工具集，以 dsh 插件形式暴露给 Agent。
 
 > **Compatibility**: built and tested against dsh `0.2.0-rc.2` (preview).
 > The `apply(ctx)` plugin spec is stable; verify against your own dsh version if newer.
+
+---
+
+## 一行安装
+
+```bash
+dsh plugin --profile desktop add github:yuehancn/dsh-tool-gzh-publisher
+```
+
+**支持的 profile**：`desktop`（桌面版）/ `web`（Web 版）。
+⚠️ 需要本机已有 `gzh_auto.py` 管线脚本，见下方「前置条件」。
 
 它**不重新实现**微信 API —— 微信的 access_token 握手、草稿创建、发布前质量门
 都在已经跑通的 `gzh_auto.py`（来自 `gzh-auto-publisher` 技能）里。本插件是一层
