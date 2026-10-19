@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "WeChat Official Account Publisher",
+    "description": "Run the publish gate on a draft and push it to the WeChat Official Account draft box. Five tools: list accounts, validate, check config, push draft, verify credentials. Pushes drafts only, never publishes."
+  }
+}

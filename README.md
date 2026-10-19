@@ -5,20 +5,37 @@
 > **在 dsh 里把关并推送公众号草稿** —— 装完这个插件，你的 Agent 就能先过质量门、
 > 再把稿件推进公众号草稿箱，全程不用离开对话。
 
-公众号（WeChat Official Account）管线工具集，以 dsh 插件形式暴露给 Agent。
+**npm 包名：`dsh-tool-gzh-publisher`** ｜ 公众号（WeChat Official Account）管线工具集，
+以 dsh 插件形式暴露给 Agent。
+
+![dsh-tool-gzh-publisher 真实工具输出](docs/screenshot-1.png)
+
+*上图是插件三个工具的真实输出：`gzh_check` 配置体检、`gzh_verify` 真实换到
+微信 token、`gzh_accounts` 列账号。*
 
 > **Compatibility**: built and tested against dsh `0.2.0-rc.2` (preview).
+> 声明见 `package.json` 顶层 `engines.dsh`（`>=0.2.0-rc.2`）。
 > The `apply(ctx)` plugin spec is stable; verify against your own dsh version if newer.
 
 ---
 
 ## 一行安装
 
+**从 npm 装（推荐，也是 DSH 内置插件市场能一键装的唯一形式）：**
+
+```bash
+dsh plugin --profile web add dsh-tool-gzh-publisher
+# 桌面版把 web 换成 desktop
+dsh plugin --profile desktop add dsh-tool-gzh-publisher
+```
+
+**从 GitHub 源码装（未发 npm 时可用）：**
+
 ```bash
 dsh plugin --profile desktop add github:yuehancn/dsh-tool-gzh-publisher
 ```
 
-**支持的 profile**：`desktop`（桌面版）/ `web`（Web 版）。
+**支持的 profile**：`web` / `desktop`（桌面版）。
 ⚠️ 需要本机已有 `gzh_auto.py` 管线脚本，见下方「前置条件」。
 
 它**不重新实现**微信 API —— 微信的 access_token 握手、草稿创建、发布前质量门
@@ -31,18 +48,60 @@ dsh plugin --profile desktop add github:yuehancn/dsh-tool-gzh-publisher
 
 ---
 
-## 安装
+## 装完之后：5 分钟跑通最小示例
 
-```bash
-dsh plugin --profile desktop add github:yuehancn/dsh-tool-gzh-publisher
+> ⚠️ 本插件桥接一个外部发布脚本，**不是装完就自动可用**。但下面两步不需要任何
+> 微信凭据 —— 它们只读本地文件与本地脚本，**完全不出网**，可以立刻验证插件是否装好。
+
+### 第 1 步：写一个最小 `accounts.json`
+
+```json
+{
+  "我的公众号": {
+    "name": "我的公众号",
+    "positioning": "账号定位一句话",
+    "keywords": ["关键词1", "关键词2"],
+    "workdir": "C:/path/to/drafts",
+    "env_file": "C:/path/to/.env",
+    "min_cjk": 1500,
+    "max_cjk": 2600,
+    "min_gold": 2,
+    "ending": "…我的公众号",
+    "author": "作者名"
+  }
+}
 ```
 
-Replace `desktop` with your own profile name. **This plugin needs external setup**
-(a publisher script + an account registry) — see below.
+### 第 2 步：配好三个路径并重启 dsh
 
-> ⚠️ **本插件不是开箱即用**。它桥接的 `gzh_auto.py` 与 `accounts.json` 是另一个
-> 仓库/技能的内容。装完插件后必须自己配好这三个路径，否则工具会明确报
-> `gzh: publisher script not found at "…"`。
+在 profile 的 `cordis.patch.yml` 覆盖插件行（**按 id 覆盖已存在的行**，不是 `insert`）：
+
+```yaml
+- id: tool-gzh-publisher
+  config:
+    scriptPath: <你的 gzh_auto.py 绝对路径>
+    pythonPath: <你的 python 解释器绝对路径>
+    accountsPath: <你的 accounts.json 绝对路径>
+```
+
+### 第 3 步：用离线工具验证
+
+在 dsh 里说：
+
+```
+有哪些号可以发
+→ gzh_accounts()        ← 读 accounts.json，不出网，装好就能用
+
+看看这个号配置齐不齐
+→ gzh_check(account="我的公众号")   ← 体检字段/路径/凭据格式，不出网
+```
+
+**看到账号列表和体检结果，就说明插件已经装好并生效了。** 接下来才需要
+`env_file` 里的 `WECHAT_APPID` / `WECHAT_APPSECRET` 去跑 `gzh_verify`（真实鉴权）
+和 `gzh_push_draft`（推草稿）。
+
+> ⚠️ `env_file` 指向含微信凭据的文件，**不要提交到任何仓库**。
+> 缺配置时工具会明确报 `gzh: publisher script not found at "…"`，不会静默失败。
 
 ---
 
