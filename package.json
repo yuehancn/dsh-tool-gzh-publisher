@@ -1,6 +1,6 @@
 {
   "name": "dsh-tool-gzh-publisher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "WeChat Official Account (公众号) pipeline for DeepSeek Harness: validate a draft against the publish gate, then push it to the draft box.",
   "type": "module",
   "main": "lib/index.js",
@@ -16,6 +16,7 @@
     "lib/**/*.js",
     "locale/*.json",
     "icon.svg",
+    "docs/screenshot-*",
     "cordis.patch.yml",
     "README.md",
     "LICENSE"
